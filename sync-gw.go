@@ -31,19 +31,30 @@ type SyncGwCluster struct {
 	LocalIp                  string
 	RequiresCouchbaseServer  bool
 	LaunchNginxEnabled       bool
+	fleetClient              *CouchbaseFleet
 }
 
-func NewSyncGwCluster(etcdServers []string) *SyncGwCluster {
+func NewSyncGwCluster(etcdServers []string, fleetURI string) *SyncGwCluster {
 
 	s := &SyncGwCluster{}
+	c := NewCouchbaseFleet(etcdServers, fleetURI)
 
 	if len(etcdServers) > 0 {
 		s.EtcdServers = etcdServers
+		c.EtcdServers = etcdServers
 		log.Printf("Connect to explicit etcd servers: %v", s.EtcdServers)
 	} else {
 		s.EtcdServers = []string{}
+		c.EtcdServers = []string{}
 		log.Printf("Connect to etcd on localhost")
 	}
+
+	if fleetURI != "" {
+		c.FleetURI = FLEET_API_ENDPOINT
+	}
+
+	s.fleetClient = c
+
 	s.ConnectToEtcd()
 	return s
 
@@ -382,7 +393,7 @@ func (s SyncGwCluster) kickOffFleetUnits() error {
 
 	for i := 1; i < s.NumNodes+1; i++ {
 
-		if err := launchFleetUnitN(i, "sync_gw_node", fleetUnitJson); err != nil {
+		if err := s.fleetClient.launchFleetUnitN(i, "sync_gw_node", fleetUnitJson); err != nil {
 			return err
 		}
 
@@ -465,7 +476,7 @@ func (s SyncGwCluster) kickOffFleetSidekickUnits() error {
 			return err
 		}
 
-		if err := launchFleetUnitN(i, "sync_gw_sidekick", fleetUnitJson); err != nil {
+		if err := s.fleetClient.launchFleetUnitN(i, "sync_gw_sidekick", fleetUnitJson); err != nil {
 			return err
 		}
 
@@ -546,7 +557,7 @@ func (s SyncGwCluster) LaunchNginx() error {
 	}
 
 	for unitName, unitFilePath := range fleetUnits {
-		if err := launchFleetUnitFile(unitName, unitFilePath); err != nil {
+		if err := s.fleetClient.launchFleetUnitFile(unitName, unitFilePath); err != nil {
 			return err
 		}
 	}
