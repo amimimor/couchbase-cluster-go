@@ -72,7 +72,7 @@ func (c *CouchbaseFleet) ConnectToEtcd() {
 func (c CouchbaseFleet) VerifyFleetAPIAvailable() error {
 	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
 	jsonMap := map[string]interface{}{}
-	client, uri := c.getJsonDataHTTPClient(endpointSubdir)
+	client, uri := c.jsonDataHTTPClient(endpointSubdir)
 	return getJsonDataMiddleware(client, uri, &jsonMap, func(req *http.Request) {})
 }
 
@@ -108,7 +108,7 @@ func (c *CouchbaseFleet) LaunchCouchbaseServer() error {
 
 	for i := 1; i < c.NumNodes+1; i++ {
 
-		if err := launchFleetUnitN(
+		if err := c.launchFleetUnitN(
 			i,
 			UNIT_NAME_NODE,
 			nodeFleetUnitJson,
@@ -121,7 +121,7 @@ func (c *CouchbaseFleet) LaunchCouchbaseServer() error {
 			return err
 		}
 
-		if err := launchFleetUnitN(
+		if err := c.launchFleetUnitN(
 			i,
 			UNIT_NAME_SIDEKICK,
 			sidekickFleetUnitJson,
@@ -164,9 +164,9 @@ func (c CouchbaseFleet) StopUnits(allUnits bool) error {
 
 		// stop the unit by updating desiredState to inactive
 		// and posting to fleet api
-		endpointSubdir := fmt.Sprintf("/%v/units/%v", FLEET_API_SUBDIR, unit.name)
-		log.Printf("Stop unit %v via PUT %v", unit.Name, endpointSubdir)
-		client, uri := c.getJsonDataHTTPClient(endpointSubdir)
+		endpointSubdir := fmt.Sprintf("/%v/units/%v", FLEET_API_SUBDIR, unit.Name)
+		log.Printf("Stop unit %v via putJsonDataMiddleware %v", unit.Name, endpointSubdir)
+		client, uri := c.jsonDataHTTPClient(endpointSubdir)
 		return putJsonDataMiddleware(client, uri, `{"desiredState": "inactive"}`, func(req *http.Request) {})
 
 	}
@@ -174,8 +174,6 @@ func (c CouchbaseFleet) StopUnits(allUnits bool) error {
 	return c.ManipulateUnits(unitStopper, allUnits)
 
 }
-
-// TODO: hadnle DELETE
 
 // Call Fleet API and tell it to destroy units.  If allUnits is false,
 // will only stop couchbase server node + couchbase server sidekick units.
@@ -193,9 +191,10 @@ func (c CouchbaseFleet) DestroyUnits(allUnits bool) error {
 
 		// stop the unit by updating desiredState to inactive
 		// and posting to fleet api
-		endpointUrl := fmt.Sprintf("%v/units/%v", FLEET_API_ENDPOINT, unit.Name)
-		return DELETE(endpointUrl)
-
+		endpointSubdir := fmt.Sprintf("%v/units/%v", FLEET_API_SUBDIR, unit.Name)
+		log.Printf("Destroy unit %v via deleteJsonDataMiddleware %v", unit.Name, endpointSubdir)
+		client, uri := c.jsonDataHTTPClient(endpointSubdir)
+		return deleteJsonDataMiddleware(client, uri)
 	}
 
 	return c.ManipulateUnits(unitDestroyer, allUnits)
@@ -245,15 +244,17 @@ func (c CouchbaseFleet) findAllFleetUnits() (units []*schema.Unit, err error) {
 
 		// append a next page token to url if needed
 		if len(nextPageToken) > 0 {
-			endpointUrl = fmt.Sprintf("%v/units?nextPageToken=%v", FLEET_API_ENDPOINT, nextPageToken)
+			endpointUrl = fmt.Sprintf("%v/units?nextPageToken=%v", FLEET_API_SUBDIR, nextPageToken)
 		} else {
-			endpointUrl = fmt.Sprintf("%v/units", FLEET_API_ENDPOINT)
+			endpointUrl = fmt.Sprintf("%v/units", FLEET_API_SUBDIR)
 		}
 
 		log.Printf("Getting units from %v", endpointUrl)
 
 		unitPage := schema.UnitPage{}
-		if err := getJsonData(endpointUrl, &unitPage); err != nil {
+		client, uri := c.jsonDataHTTPClient(endpointUrl)
+
+		if err := getJsonDataMiddleware(client, uri, &unitPage, func(req *http.Request) {}); err != nil {
 			return true, err
 		}
 
@@ -410,11 +411,11 @@ func (c CouchbaseFleet) verifyEnoughMachinesAvailable() error {
 
 	log.Printf("verifyEnoughMachinesAvailable()")
 
-	endpointUrl := fmt.Sprintf("%v/machines", FLEET_API_ENDPOINT)
-
-	// {"machines":[{"id":"a91c394439734375aa256d7da1410132","primaryIP":"172.17.8.101"}]}
+	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
 	jsonMap := map[string]interface{}{}
-	if err := getJsonData(endpointUrl, &jsonMap); err != nil {
+	client, uri := c.jsonDataHTTPClient(endpointSubdir)
+
+	if err := getJsonDataMiddleware(client, uri, &jsonMap, func(req *http.Request) {}); err != nil {
 		log.Printf("getJsonData error: %v", err)
 		return err
 	}
@@ -594,18 +595,18 @@ func generateUnitFileFromTemplate(templateContent []byte, params interface{}) (s
 
 }
 
-func launchFleetUnitN(unitNumber int, unitName, fleetUnitJson string) error {
+func (c CouchbaseFleet) launchFleetUnitN(unitNumber int, unitName, fleetUnitJson string) error {
 
 	log.Printf("Launch fleet unit %v (%v)", unitName, unitNumber)
 
-	endpointUrl := fmt.Sprintf("%v/units/%v@%v.service", FLEET_API_ENDPOINT, unitName, unitNumber)
-
-	return PUT(endpointUrl, fleetUnitJson)
-
+	endpointSubdir := fmt.Sprintf("%v/units/%v@%v.service", FLEET_API_SUBDIR, unitName, unitNumber)
+	log.Printf("Stop unit %v via putJsonDataMiddleware %v", unitName, endpointSubdir)
+	client, uri := c.jsonDataHTTPClient(endpointSubdir)
+	return putJsonDataMiddleware(client, uri, fleetUnitJson, func(req *http.Request) {})
 }
 
 // Launch a fleet unit file that is stored in the data dir (via go-bindata)
-func launchFleetUnitFile(unitName, unitFilePath string) error {
+func (c CouchbaseFleet) launchFleetUnitFile(unitName, unitFilePath string) error {
 
 	log.Printf("Launch fleet unit file (%v)", unitName)
 
@@ -620,71 +621,15 @@ func launchFleetUnitFile(unitName, unitFilePath string) error {
 		return err
 	}
 
-	endpointUrl := fmt.Sprintf("%v/units/%v.service", FLEET_API_ENDPOINT, unitName)
-
-	return PUT(endpointUrl, string(jsonBytes))
-
+	endpointSubdir := fmt.Sprintf("%v/units/%v.service", FLEET_API_SUBDIR, unitName)
+	client, uri := c.jsonDataHTTPClient(endpointSubdir)
+	return putJsonDataMiddleware(client, uri, string(jsonBytes), func(req *http.Request) {})
 }
 
-func DELETE(endpointUrl string) error {
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest("DELETE", endpointUrl, nil)
-	if err != nil {
-		return err
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("DELETE: Unexpected status code in response")
-	}
-
-	return nil
-
-}
-
-func PUT(endpointUrl, json string) error {
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest("PUT", endpointUrl, bytes.NewReader([]byte(json)))
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-	bodyStr, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	log.Printf("response body: %v", string(bodyStr))
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("PUT: Unexpected status code in response")
-	}
-
-	return nil
-
-}
-
-// getJsonDataHTTPClient creates an http.Client dependant on the prefix of the fleetURI.
+// jsonDataHTTPClient creates an http.Client dependant on the prefix of the fleetURI.
 // if the fleet daemon is using a unix socket or an http port then this function would yield a properly
 // initialized http.Client supporting either transport
-func (c CouchbaseFleet) getJsonDataHTTPClient(endpointSubdir string) (*http.Client, string) {
+func (c CouchbaseFleet) jsonDataHTTPClient(endpointSubdir string) (*http.Client, string) {
 	var client *http.Client
 	var uri string
 	if c.isUnixSocket(c.FleetURI) {
