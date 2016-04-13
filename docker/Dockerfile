@@ -1,44 +1,26 @@
+FROM golang:1.5.1
+#ADD docker-build-noproxy.sh /docker-build.sh
+ADD https://github.com/Masterminds/glide/releases/download/0.10.1/glide-0.10.1-linux-amd64.tar.gz /glide.tgz
+RUN mkdir /glide
+RUN tar xvfz /glide.tgz -C /glide
 
-FROM ubuntu:14.04
+ADD *.go /go/src/couchbase-cluster-go/
+ADD glide.yaml /go/src/couchbase-cluster-go/
+ADD glide.lock /go/src/couchbase-cluster-go/
+ADD data       /go/src/couchbase-cluster-go/data/
+ADD cmd        /go/src/couchbase-cluster-go/cmd/
+#ADD start.sh /
+#RUN chmod +x /start.sh
 
-MAINTAINER Traun Leyden <tleyden@couchbase.com>
+ENV GO15VENDOREXPERIMENT=1
+WORKDIR /go/src/couchbase-cluster-go/
+ENV HTTP_PROXY "proxy-us.intel.com:911"
+ENV HTTPS_PROXY "proxy-us.intel.com:911"
 
-ENV GOPATH /opt/go
-ENV GOROOT /usr/local/go
+RUN HTTP_PROXY=proxy-us.intel.com:911 HTTPS_PROXY=proxy-us.intel.com:911 /glide/linux-amd64/glide --debug --home /go/src/couchbase-cluster-go/ install
 
-ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+RUN echo "gopath: " $GOPATH
+RUN echo "goroot: " $GOROOT
+#RUN go install
 
-# Get dependencies
-RUN apt-get update && apt-get install -y \
-    bc \
-    curl \
-    emacs \
-    git \
-    mercurial \
-    wget && \
-    apt-get clean
-
-# Download and install jq
-RUN wget http://stedolan.github.io/jq/download/linux64/jq && \
-    chmod +x jq && \
-    mv jq /usr/local/bin
-
-# Download and install Go 1.4
-RUN wget http://golang.org/dl/go1.4.2.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.4.2.linux-amd64.tar.gz && \
-    rm go1.4.2.linux-amd64.tar.gz
-
-# install go packages
-RUN go get github.com/tools/godep && \
-    go get github.com/nsf/gocode && \
-    go get code.google.com/p/go.tools/cmd/goimports && \
-    go get github.com/golang/lint/golint
-
-# clone emacs conf
-RUN git clone https://github.com/fgimenez/.emacs.d.git /root/.emacs.d && \
-    cd /root/.emacs.d && \
-    git checkout origin/go
-
-# Install couchbase-cluster-go
-RUN go get github.com/tleyden/couchbase-cluster-go/...
-
+#CMD ["/start.sh"]

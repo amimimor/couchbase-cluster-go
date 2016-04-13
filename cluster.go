@@ -18,13 +18,13 @@ import (
 )
 
 const (
-	KEY_NODE_STATE                = "/couchbase.com/couchbase-node-state"
-	KEY_NODE_STATE_TTL uint64     = 10
-	KEY_USER_PASS                 = "/couchbase.com/userpass"
-	KEY_REMOVE_REBALANCE_DISABLED = "/couchbase.com/remove-rebalance-disabled"
-	TTL_NONE                      = 0
-	MAX_RETRIES_JOIN_CLUSTER      = 10
-	MAX_RETRIES_START_COUCHBASE   = 10
+	KEY_NODE_STATE                       = "/couchbase.com/couchbase-node-state"
+	KEY_NODE_STATE_TTL            uint64 = 10
+	KEY_USER_PASS                        = "/couchbase.com/userpass"
+	KEY_REMOVE_REBALANCE_DISABLED        = "/couchbase.com/remove-rebalance-disabled"
+	TTL_NONE                             = 0
+	MAX_RETRIES_JOIN_CLUSTER             = 10
+	MAX_RETRIES_START_COUCHBASE          = 10
 
 	// in order to set the username and password of a cluster
 	// you must pass these "factory default values"
@@ -98,7 +98,7 @@ func (c *CouchbaseCluster) StartCouchbaseSidekick() error {
 	// if any of the bootstrapping functions error or panic, we don't want to leave a stale KEY_NODE_STATE
 	// with no ttl, which is the default state inside c.BecomeFirstClusterNode()
 	defer c.etcdClient.UpdateDir(KEY_NODE_STATE, KEY_NODE_STATE_TTL)
-	
+
 	success, err := c.BecomeFirstClusterNode()
 	if err != nil {
 		return err
@@ -974,7 +974,8 @@ func (c CouchbaseCluster) getJsonData(endpointUrl string, into interface{}) erro
 	middleware := func(req *http.Request) {
 		req.SetBasicAuth(c.AdminUsername, c.AdminPassword)
 	}
-	return getJsonDataMiddleware(endpointUrl, into, middleware)
+	client := &http.Client{}
+	return getJsonDataMiddleware(client, endpointUrl, into, middleware)
 
 }
 

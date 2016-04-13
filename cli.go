@@ -82,6 +82,13 @@ func ExtractDockerTagOrLatest(docOptParsed map[string]interface{}) string {
 
 }
 
+func ExtractFleetURI(docOptParsed map[string]interface{}) string {
+	fleetURI, _ := ExtractStringArg(docOptParsed, "--fleet-uri")
+	// returning either "" in parse error or the actual parsed flag value
+	return fleetURI
+
+}
+
 func ExtractCbVersion(docOptParsed map[string]interface{}) (string, error) {
 
 	rawVersion, err := ExtractStringArg(docOptParsed, "--version")

@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"path"
 	"path/filepath"
@@ -24,7 +25,9 @@ const (
 )
 
 var (
-	FLEET_API_ENDPOINT = "http://localhost:49153/fleet/v1"
+	FLEET_API_ENDPOINT      = "http://localhost:49153" ///fleet/v1
+	FLEET_API_SUBDIR        = "fleet/v1"
+	FLEET_API_ENDPOINT_STUB = "http://domain-sock"
 )
 
 type CouchbaseFleet struct {
@@ -34,10 +37,11 @@ type CouchbaseFleet struct {
 	CbVersion           string
 	ContainerTag        string // Docker tag
 	EtcdServers         []string
+	FleetURI            string
 	SkipCleanSlateCheck bool
 }
 
-func NewCouchbaseFleet(etcdServers []string) *CouchbaseFleet {
+func NewCouchbaseFleet(etcdServers []string, fleetURI string) *CouchbaseFleet {
 
 	c := &CouchbaseFleet{}
 
@@ -48,6 +52,11 @@ func NewCouchbaseFleet(etcdServers []string) *CouchbaseFleet {
 		c.EtcdServers = []string{}
 		log.Printf("Connect to etcd on localhost")
 	}
+
+	if fleetURI != "" {
+		c.FleetURI = FLEET_API_ENDPOINT
+	}
+
 	c.ConnectToEtcd()
 	return c
 
@@ -61,9 +70,10 @@ func (c *CouchbaseFleet) ConnectToEtcd() {
 
 // Is the Fleet API available?  If not, return an error.
 func (c CouchbaseFleet) VerifyFleetAPIAvailable() error {
-	endpointUrl := fmt.Sprintf("%v/machines", FLEET_API_ENDPOINT)
+	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
 	jsonMap := map[string]interface{}{}
-	return getJsonData(endpointUrl, &jsonMap)
+	client, uri := c.getJsonDataHTTPClient(endpointSubdir)
+	return getJsonDataMiddleware(client, uri, &jsonMap, func(req *http.Request) {})
 }
 
 func (c *CouchbaseFleet) LaunchCouchbaseServer() error {
@@ -154,15 +164,18 @@ func (c CouchbaseFleet) StopUnits(allUnits bool) error {
 
 		// stop the unit by updating desiredState to inactive
 		// and posting to fleet api
-		endpointUrl := fmt.Sprintf("%v/units/%v", FLEET_API_ENDPOINT, unit.Name)
-		log.Printf("Stop unit %v via PUT %v", unit.Name, endpointUrl)
-		return PUT(endpointUrl, `{"desiredState": "inactive"}`)
+		endpointSubdir := fmt.Sprintf("/%v/units/%v", FLEET_API_SUBDIR, unit.name)
+		log.Printf("Stop unit %v via PUT %v", unit.Name, endpointSubdir)
+		client, uri := c.getJsonDataHTTPClient(endpointSubdir)
+		return putJsonDataMiddleware(client, uri, `{"desiredState": "inactive"}`, func(req *http.Request) {})
 
 	}
 
 	return c.ManipulateUnits(unitStopper, allUnits)
 
 }
+
+// TODO: hadnle DELETE
 
 // Call Fleet API and tell it to destroy units.  If allUnits is false,
 // will only stop couchbase server node + couchbase server sidekick units.
@@ -666,4 +679,44 @@ func PUT(endpointUrl, json string) error {
 
 	return nil
 
+}
+
+// getJsonDataHTTPClient creates an http.Client dependant on the prefix of the fleetURI.
+// if the fleet daemon is using a unix socket or an http port then this function would yield a properly
+// initialized http.Client supporting either transport
+func (c CouchbaseFleet) getJsonDataHTTPClient(endpointSubdir string) (*http.Client, string) {
+	var client *http.Client
+	var uri string
+	if c.isUnixSocket(c.FleetURI) {
+		client = c.createUnixSocketHTTPClient(c.FleetURI)
+		// using the fake URI to satisfy fleet REST API that requires http://.../ format
+		uri = fmt.Sprintf("%s/%s", FLEET_API_ENDPOINT_STUB, endpointSubdir)
+	} else {
+		client = c.createHTTPClient()
+		uri = fmt.Sprintf("%s/%s", c.FleetURI, endpointSubdir)
+	}
+	return client, uri
+}
+
+func (c CouchbaseFleet) isUnixSocket(endpointUrl string) bool {
+	return strings.HasPrefix(endpointUrl, "unix")
+}
+
+func (c CouchbaseFleet) createUnixSocketHTTPClient(fleetURI string) *http.Client {
+	dialFunc := func(string, string) (net.Conn, error) {
+		return net.Dial("unix", fleetURI)
+	}
+
+	tr := &http.Transport{
+		Dial: dialFunc,
+	}
+
+	client := &http.Client{Transport: tr}
+	return client
+}
+
+// if further details should be added to the init of the http.Client
+func (c CouchbaseFleet) createHTTPClient() *http.Client {
+	client := &http.Client{}
+	return client
 }

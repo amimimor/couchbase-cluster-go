@@ -6,8 +6,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/docopt/docopt-go"
-	"github.com/tleyden/couchbase-cluster-go"
+	"github.intel.com/IT-AdvancedAnalytics/couchbase-cluster-go"
 )
 
 func main() {
@@ -16,7 +15,7 @@ func main() {
 
 Usage:
   couchbase-cluster wait-until-running [--etcd-servers=<server-list>] 
-  couchbase-cluster start-couchbase-sidekick (--local-ip=<ip>|--discover-local-ip) [--etcd-servers=<server-list>|--k8s-service-name=<svc>] 
+  couchbase-cluster start-couchbase-sidekick (--local-ip=<ip>|--discover-local-ip) [--etcd-servers=<server-list>|--k8s-service-name=<svc>] [--fleet-uri]
   couchbase-cluster remove-and-rebalance --local-ip=<ip> [--etcd-servers=<server-list>] 
   couchbase-cluster get-live-node-ip [--etcd-servers=<server-list>] 
   couchbase-cluster -h | --help
@@ -25,6 +24,7 @@ Options:
   -h --help     Show this screen.
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
   --k8s-service-name=<svc> Discover etcd server from Environment variable (TODO: document variable(s))
+  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
   --local-ip=<ip> the ip address (no port) to publish in etcd
 `
 
