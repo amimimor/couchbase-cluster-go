@@ -1,4 +1,4 @@
-[![Build Status](https://drone.io/github.com/tleyden/couchbase-cluster-go/status.png)](https://drone.io/github.com/tleyden/couchbase-cluster-go/latest)
+[![Build Status](https://drone.io/github.com/amimimor/couchbase-cluster-go/status.png)](https://drone.io/github.com/amimimor/couchbase-cluster-go/latest)
 [![Join the chat at https://gitter.im/tleyden/couchbase-cluster-go](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tleyden/couchbase-cluster-go?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This is a Go library that helps initialize and manage a Couchbase Server cluster running under CoreOS.
@@ -16,11 +16,11 @@ Since the docker image can be out of date, and rebuilding it can be time consumi
 
 ```
 $ etcdctl set /couchbase.com/enable-code-refresh true
-$ sudo docker run --net=host tleyden5iwx/couchbase-cluster-go update-wrapper couchbase-fleet launch-cbs \
+$ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper couchbase-fleet launch-cbs \
   --version 3.0.1 \
   --num-nodes 3 \
   --userpass "user:passw0rd" 
-$ sudo docker run --net=host tleyden5iwx/couchbase-cluster-go update-wrapper sync-gw-cluster launch-sgw \
+$ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper sync-gw-cluster launch-sgw \
   --num-nodes=1 \
   --config-url=http://git.io/b9PK \
   --create-bucket todos \
@@ -35,7 +35,7 @@ You need to pass another parameter: `--launch-nginx` when launching Sync Gateway
 The easiest way is to replace the third command in **Running on the latest code** with:
 
 ```
-$ sudo docker run --net=host tleyden5iwx/couchbase-cluster-go update-wrapper sync-gw-cluster launch-sgw --launch-nginx --num-nodes=1 --config-url=http://git.io/b9PK --create-bucket todos --create-bucket-size 512 --create-bucket-replicas 1
+$ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper sync-gw-cluster launch-sgw --launch-nginx --num-nodes=1 --config-url=http://git.io/b9PK --create-bucket todos --create-bucket-size 512 --create-bucket-replicas 1
 ```
 
 **Verify Internal**
@@ -69,15 +69,15 @@ There is a mechanism that will rewrite the Sync Gateway config provided before l
 
 A live Couchbase Server node will be discovered via etcd and the value in the Sync Gateway config will be replaced with that node's ip address.
 
-[Complete Sync Gateway Config example](https://gist.github.com/tleyden/ca063725e6158eca4093)
+[Complete Sync Gateway Config example](https://gist.github.com/amimimor/ca063725e6158eca4093)
 
 ### Destroying the cluster
 
 The following commands will stop and destroy all units (Couchbase Server, Sync Gateway, and otherwise)
 
 ```
-$ sudo docker run --net=host tleyden5iwx/couchbase-cluster-go update-wrapper couchbase-fleet stop --all-units
-$ sudo docker run --net=host tleyden5iwx/couchbase-cluster-go update-wrapper couchbase-fleet destroy --all-units
+$ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper couchbase-fleet stop --all-units
+$ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper couchbase-fleet destroy --all-units
 ```
 
 This command will delete all persistent data in the `/opt/var/couchbase` directory across all machines on the cluster.

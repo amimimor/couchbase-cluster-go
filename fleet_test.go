@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/couchbaselabs/go.assert"
-	"github.com/tleyden/fakehttp"
+	"github.com/amimimor/fakehttp"
 )
 
 func TestGenerateNodeFleetUnitJson(t *testing.T) {

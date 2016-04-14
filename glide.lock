@@ -22,7 +22,7 @@ imports:
   - unit
 - name: github.com/docopt/docopt-go
   version: 784ddc588536785e7299f7272f39101f7faccc3f
-- name: github.com/tleyden/couchbase-cluster-go
+- name: github.com/amimimor/couchbase-cluster-go
   version: e06c079be28d55a2106c3e7bda39e5cbd0f24bcb
 - name: github.com/tleyden/go-etcd
   version: 6aa2da5a7a905609c93036b9307185a04a5a84a5

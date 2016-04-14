@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/docopt/docopt-go"
-	"github.com/tleyden/couchbase-cluster-go"
+	"github.com/amimimor/couchbase-cluster-go"
 
 	// "github.intel.com/IT-AdvancedAnalytics/couchbase-cluster-go"
 )

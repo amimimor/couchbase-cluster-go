@@ -7,7 +7,7 @@ import:
   subpackages:
   - unit
 - package: github.com/docopt/docopt-go
-- package: github.com/tleyden/couchbase-cluster-go
+- package: github.com/amimimor/couchbase-cluster-go
 - package: github.com/tleyden/go-etcd
   subpackages:
   - etcd

@@ -16,7 +16,7 @@ import (
 
 	"github.com/coreos/fleet/schema"
 	"github.com/coreos/go-systemd/unit"
-	"github.com/tleyden/go-etcd/etcd"
+	"github.com/amimimor/go-etcd/etcd"
 )
 
 const (

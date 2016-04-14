@@ -7,7 +7,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/tleyden/go-etcd/etcd"
+	"github.com/amimimor/go-etcd/etcd"
 )
 
 // This makes it easy to run a command after possibly first grabbing the latest version
@@ -107,12 +107,12 @@ func findEtcdServersFromArgs(args []string) []string {
 
 func updateAndRebuild() {
 
-	// go get -u -v github.com/tleyden/couchbase-cluster-go/...
+	// go get -u -v github.com/amimimor/couchbase-cluster-go/...
 	goGetArgs := []string{
 		"get",
 		"-u",
 		"-v",
-		"github.com/tleyden/couchbase-cluster-go/...",
+		"github.com/amimimor/couchbase-cluster-go/...",
 	}
 	cmdGoGet := exec.Command("go", goGetArgs...)
 	cmdGoGet.Stdout = os.Stdout

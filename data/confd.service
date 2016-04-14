@@ -12,7 +12,7 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill %n
 ExecStartPre=-/usr/bin/docker rm %n
 
-ExecStartPre=/usr/bin/docker pull tleyden5iwx/sync-gateway-nginx-confd
+ExecStartPre=/usr/bin/docker pull intelaa/sync-gateway-nginx-confd
 
 # we need to provide our confd container with the IP it can reach etcd
 # on, the docker socket so it send HUP signals to nginx, and our data volume
@@ -21,7 +21,7 @@ ExecStart=/usr/bin/docker run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --volumes-from=conf-data \
   --name %n \
-  tleyden5iwx/sync-gateway-nginx-confd
+  intelaa/sync-gateway-nginx-confd
 
 ExecStop=/usr/bin/docker stop -t 3 %n
 Restart=on-failure

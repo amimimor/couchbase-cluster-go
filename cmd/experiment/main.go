@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/tleyden/couchbase-cluster-go"
+	"github.com/amimimor/couchbase-cluster-go"
 )
 
 // func (c CouchbaseCluster) CreateDefaultBucket() error {

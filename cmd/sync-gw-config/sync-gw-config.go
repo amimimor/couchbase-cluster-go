@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/docopt/docopt-go"
-	"github.com/tleyden/couchbase-cluster-go"
+	"github.com/amimimor/couchbase-cluster-go"
 )
 
 func main() {
