@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amimimor/go-etcd/etcd"
 	"github.com/coreos/fleet/schema"
 	"github.com/coreos/go-systemd/unit"
-	"github.com/amimimor/go-etcd/etcd"
 )
 
 const (

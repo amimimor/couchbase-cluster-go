@@ -1,4 +1,4 @@
-FROM golang:1.5.1
+FROM golang:1.6.1
 #ADD docker-build-noproxy.sh /docker-build.sh
 ADD https://github.com/Masterminds/glide/releases/download/0.10.1/glide-0.10.1-linux-amd64.tar.gz /glide.tgz
 RUN mkdir /glide
@@ -9,6 +9,7 @@ ADD glide.yaml /go/src/couchbase-cluster-go/
 ADD glide.lock /go/src/couchbase-cluster-go/
 ADD data       /go/src/couchbase-cluster-go/data/
 ADD cmd        /go/src/couchbase-cluster-go/cmd/
+#ADD vendor     /go/src/couchbase-cluster-go/vendor/
 #ADD start.sh /
 #RUN chmod +x /start.sh
 
@@ -21,6 +22,8 @@ RUN HTTP_PROXY=proxy-us.intel.com:911 HTTPS_PROXY=proxy-us.intel.com:911 /glide/
 
 RUN echo "gopath: " $GOPATH
 RUN echo "goroot: " $GOROOT
-#RUN go install
-
-#CMD ["/start.sh"]
+RUN go install couchbase-cluster-go/cmd/update-wrapper
+RUN go install couchbase-cluster-go/cmd/sync-gw-config
+RUN go install couchbase-cluster-go/cmd/sync-gw-cluster
+RUN go install couchbase-cluster-go/cmd/couchbase-fleet
+RUN go install couchbase-cluster-go/cmd/couchbase-cluster

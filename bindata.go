@@ -5,12 +5,12 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"strings"
-	"os"
-	"time"
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func bindata_read(data []byte, name string) ([]byte, error) {
@@ -36,9 +36,9 @@ type asset struct {
 }
 
 type bindata_file_info struct {
-	name string
-	size int64
-	mode os.FileMode
+	name    string
+	size    int64
+	mode    os.FileMode
 	modTime time.Time
 }
 
@@ -77,7 +77,7 @@ func data_confd_service() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/confd.service", size: 858, mode: os.FileMode(420), modTime: time.Unix(1427466163, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -97,7 +97,7 @@ func data_confdata_service() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/confdata.service", size: 430, mode: os.FileMode(420), modTime: time.Unix(1427465921, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -117,7 +117,7 @@ func data_couchbase_node_service_template() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/couchbase_node@.service.template", size: 861, mode: os.FileMode(420), modTime: time.Unix(1432311931, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -137,7 +137,7 @@ func data_couchbase_sidekick_service_template() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/couchbase_sidekick@.service.template", size: 858, mode: os.FileMode(420), modTime: time.Unix(1426775948, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -157,7 +157,7 @@ func data_nginx_service() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/nginx.service", size: 549, mode: os.FileMode(420), modTime: time.Unix(1427465946, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -177,7 +177,7 @@ func data_sync_gw_node_service_template() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/sync_gw_node@.service.template", size: 1047, mode: os.FileMode(420), modTime: time.Unix(1432768089, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -197,7 +197,7 @@ func data_sync_gw_sidekick_service_template() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data/sync_gw_sidekick@.service.template", size: 789, mode: os.FileMode(420), modTime: time.Unix(1426775948, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -217,7 +217,7 @@ func data_test_fleet_api_units_json() (*asset, error) {
 	}
 
 	info := bindata_file_info{name: "data-test/fleet_api_units.json", size: 54532, mode: os.FileMode(420), modTime: time.Unix(1432312052, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -262,14 +262,14 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"data/confd.service": data_confd_service,
-	"data/confdata.service": data_confdata_service,
-	"data/couchbase_node@.service.template": data_couchbase_node_service_template,
+	"data/confd.service":                        data_confd_service,
+	"data/confdata.service":                     data_confdata_service,
+	"data/couchbase_node@.service.template":     data_couchbase_node_service_template,
 	"data/couchbase_sidekick@.service.template": data_couchbase_sidekick_service_template,
-	"data/nginx.service": data_nginx_service,
-	"data/sync_gw_node@.service.template": data_sync_gw_node_service_template,
-	"data/sync_gw_sidekick@.service.template": data_sync_gw_sidekick_service_template,
-	"data-test/fleet_api_units.json": data_test_fleet_api_units_json,
+	"data/nginx.service":                        data_nginx_service,
+	"data/sync_gw_node@.service.template":       data_sync_gw_node_service_template,
+	"data/sync_gw_sidekick@.service.template":   data_sync_gw_sidekick_service_template,
+	"data-test/fleet_api_units.json":            data_test_fleet_api_units_json,
 }
 
 // AssetDir returns the file names below a certain
@@ -308,75 +308,67 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type _bintree_t struct {
-	Func func() (*asset, error)
+	Func     func() (*asset, error)
 	Children map[string]*_bintree_t
 }
+
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"data": &_bintree_t{nil, map[string]*_bintree_t{
-		"confd.service": &_bintree_t{data_confd_service, map[string]*_bintree_t{
-		}},
-		"confdata.service": &_bintree_t{data_confdata_service, map[string]*_bintree_t{
-		}},
-		"couchbase_node@.service.template": &_bintree_t{data_couchbase_node_service_template, map[string]*_bintree_t{
-		}},
-		"couchbase_sidekick@.service.template": &_bintree_t{data_couchbase_sidekick_service_template, map[string]*_bintree_t{
-		}},
-		"nginx.service": &_bintree_t{data_nginx_service, map[string]*_bintree_t{
-		}},
-		"sync_gw_node@.service.template": &_bintree_t{data_sync_gw_node_service_template, map[string]*_bintree_t{
-		}},
-		"sync_gw_sidekick@.service.template": &_bintree_t{data_sync_gw_sidekick_service_template, map[string]*_bintree_t{
-		}},
+		"confd.service":                        &_bintree_t{data_confd_service, map[string]*_bintree_t{}},
+		"confdata.service":                     &_bintree_t{data_confdata_service, map[string]*_bintree_t{}},
+		"couchbase_node@.service.template":     &_bintree_t{data_couchbase_node_service_template, map[string]*_bintree_t{}},
+		"couchbase_sidekick@.service.template": &_bintree_t{data_couchbase_sidekick_service_template, map[string]*_bintree_t{}},
+		"nginx.service":                        &_bintree_t{data_nginx_service, map[string]*_bintree_t{}},
+		"sync_gw_node@.service.template":       &_bintree_t{data_sync_gw_node_service_template, map[string]*_bintree_t{}},
+		"sync_gw_sidekick@.service.template":   &_bintree_t{data_sync_gw_sidekick_service_template, map[string]*_bintree_t{}},
 	}},
 	"data-test": &_bintree_t{nil, map[string]*_bintree_t{
-		"fleet_api_units.json": &_bintree_t{data_test_fleet_api_units_json, map[string]*_bintree_t{
-		}},
+		"fleet_api_units.json": &_bintree_t{data_test_fleet_api_units_json, map[string]*_bintree_t{}},
 	}},
 }}
 
 // Restore an asset under the given directory
 func RestoreAsset(dir, name string) error {
-        data, err := Asset(name)
-        if err != nil {
-                return err
-        }
-        info, err := AssetInfo(name)
-        if err != nil {
-                return err
-        }
-        err = os.MkdirAll(_filePath(dir, path.Dir(name)), os.FileMode(0755))
-        if err != nil {
-                return err
-        }
-        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-        if err != nil {
-                return err
-        }
-        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-        if err != nil {
-                return err
-        }
-        return nil
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, path.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Restore assets under the given directory recursively
 func RestoreAssets(dir, name string) error {
-        children, err := AssetDir(name)
-        if err != nil { // File
-                return RestoreAsset(dir, name)
-        } else { // Dir
-                for _, child := range children {
-                        err = RestoreAssets(dir, path.Join(name, child))
-                        if err != nil {
-                                return err
-                        }
-                }
-        }
-        return nil
+	children, err := AssetDir(name)
+	if err != nil { // File
+		return RestoreAsset(dir, name)
+	} else { // Dir
+		for _, child := range children {
+			err = RestoreAssets(dir, path.Join(name, child))
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func _filePath(dir, name string) string {
-        cannonicalName := strings.Replace(name, "\\", "/", -1)
-        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
-

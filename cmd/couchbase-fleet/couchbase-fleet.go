@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/amimimor/couchbase-cluster-go"
+	"github.com/docopt/docopt-go"
 )
 
 func main() {
