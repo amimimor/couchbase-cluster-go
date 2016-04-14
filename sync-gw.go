@@ -11,7 +11,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/amimimor/go-etcd/etcd"
+	"github.com/tleyden/go-etcd/etcd"
 )
 
 const (

@@ -1,5 +1,6 @@
-package: github.intel.com/IT-AdvancedAnalytics/couchbase-cluster-go
+package: .
 import:
+- package: github.com/amimimor/couchbase-cluster-go
 - package: github.com/coreos/fleet
   subpackages:
   - schema
@@ -7,7 +8,6 @@ import:
   subpackages:
   - unit
 - package: github.com/docopt/docopt-go
-- package: github.com/amimimor/couchbase-cluster-go
 - package: github.com/tleyden/go-etcd
   subpackages:
   - etcd
