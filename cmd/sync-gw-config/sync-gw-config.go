@@ -5,8 +5,8 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/docopt/docopt-go"
 	"github.com/amimimor/couchbase-cluster-go"
+	"github.com/docopt/docopt-go"
 )
 
 func main() {
@@ -14,12 +14,13 @@ func main() {
 	usage := `Sync-Gw-Config.
 
 Usage:
-  sync-gw-config rewrite --destination=<config-dest> [--etcd-servers=<server-list>]
+  sync-gw-config rewrite --destination=<config-dest> [--etcd-servers=<server-list>] [--fleet-uri]
   sync-gw-config -h | --help
 
 Options:
   -h --help     Show this screen.
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
+  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
   --destination=<config-dest> The path where the updated config should be written
 `
 
@@ -48,12 +49,17 @@ func requiresRewrite(syncGwConfig string) bool {
 func rewriteConfig(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
+
 	dest, err := cbcluster.ExtractStringArg(arguments, "--destination")
 	if err != nil {
 		return err
 	}
 
-	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers)
+	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers, fleetURI)
 
 	// get the sync gw config from etcd (cbcluster.KEY_SYNC_GW_CONFIG)
 	syncGwConfig, err := syncGwCluster.FetchSyncGwConfig()
@@ -64,6 +70,7 @@ func rewriteConfig(arguments map[string]interface{}) error {
 
 		// get a couchbase live node
 		couchbaseCluster := cbcluster.NewCouchbaseCluster(etcdServers)
+
 		liveNodeIp, err := couchbaseCluster.FindLiveNode()
 
 		log.Printf("LiveNodeIp: %v", liveNodeIp)

@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/docopt/docopt-go"
 	"github.com/amimimor/couchbase-cluster-go"
+	"github.com/docopt/docopt-go"
 )
 
 func main() {
@@ -12,8 +12,8 @@ func main() {
 	usage := `Sync-Gw-Cluster:
 
 Usage:
-  sync-gw-cluster launch-sgw --num-nodes=<num_nodes> --config-url=<config_url> [--in-memory-db] [--launch-nginx] [--create-bucket=<bucket-name>] [--create-bucket-size=<bucket-size-mb>] [--create-bucket-replicas=<replica-count>] [--etcd-servers=<server-list>] [--docker-tag=<dt>]
-  sync-gw-cluster launch-sidekick --local-ip=<ip> [--etcd-servers=<server-list>]
+  sync-gw-cluster launch-sgw --num-nodes=<num_nodes> --config-url=<config_url> [--in-memory-db] [--launch-nginx] [--create-bucket=<bucket-name>] [--create-bucket-size=<bucket-size-mb>] [--create-bucket-replicas=<replica-count>] [--etcd-servers=<server-list>] [--fleet-uri] [--docker-tag=<dt>]
+  sync-gw-cluster launch-sidekick --local-ip=<ip> [--etcd-servers=<server-list>] [--fleet-uri]
   sync-gw-cluster -h | --help
 
 Options:
@@ -24,6 +24,7 @@ Options:
   --create-bucket-size=<bucket-size-mb> if creating a bucket, use this size in MB
   --create-bucket-replicas=<replica-count> if creating a bucket, use this replica count (defaults to 1)
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
+  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
   --docker-tag=<docker-tag>  if present, use this docker tag for spawned containers, otherwise, default to "latest"
   --local-ip=<ip> the ip address (no port) to publish in etcd
 `
@@ -54,8 +55,11 @@ Options:
 func launchSyncGateway(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
-
-	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
+	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers, fleetURI)
 	if err := syncGwCluster.ExtractDocOptArgs(arguments); err != nil {
 		return err
 	}
@@ -67,8 +71,11 @@ func launchSyncGateway(arguments map[string]interface{}) error {
 func launchSyncGatewaySidekick(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
-
-	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
+	syncGwCluster := cbcluster.NewSyncGwCluster(etcdServers, fleetURI)
 
 	localIp, _ := cbcluster.ExtractStringArg(arguments, "--local-ip")
 	if localIp != "" {
