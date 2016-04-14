@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/docopt/docopt-go"
 	"github.com/amimimor/couchbase-cluster-go"
 )
 
@@ -12,7 +11,7 @@ func main() {
 	usage := `Couchbase-Fleet.
 
 Usage:
-  couchbase-fleet launch-cbs --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--edition=<edition>] [--etcd-servers=<server-list>] [--docker-tag=<dt>] [--skip-clean-slate-check]
+  couchbase-fleet launch-cbs --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--edition=<edition>] [--etcd-servers=<server-list>] [--fleet-uri] [--docker-tag=<dt>] [--skip-clean-slate-check]
   couchbase-fleet stop [--all-units] [--etcd-servers=<server-list>]
   couchbase-fleet destroy [--all-units] [--etcd-servers=<server-list>]
   couchbase-fleet generate-units --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--etcd-servers=<server-list>] [--docker-tag=<dt>] --output-dir=<output_dir>
@@ -25,6 +24,7 @@ Options:
   --userpass=<user:pass> the username and password as a single string, delimited by a colon (:)
   --edition=<edition> the edition to use, either "enterprise" or "community".  Defaults to "community" edition. 
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
+  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
   --docker-tag=<dt>  if present, use this docker tag for spawned containers, otherwise, default to "latest"
   --skip-clean-slate-check  if present, will skip the check that we are starting from clean state
   --output-dir=<output_dir>
@@ -71,8 +71,12 @@ Options:
 func launchCouchbaseServer(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
 
-	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers)
+	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers, fleetURI)
 	if err := couchbaseFleet.ExtractDocOptArgs(arguments); err != nil {
 		return err
 	}
@@ -84,8 +88,12 @@ func launchCouchbaseServer(arguments map[string]interface{}) error {
 func generateUnits(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
 
-	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers)
+	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers, fleetURI)
 	if err := couchbaseFleet.ExtractDocOptArgs(arguments); err != nil {
 		return err
 	}
@@ -109,9 +117,12 @@ func generateUnits(arguments map[string]interface{}) error {
 func stopUnits(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
 
-	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers)
-
+	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers, fleetURI)
 	allUnits := cbcluster.ExtractBoolArg(arguments, "--all-units")
 
 	return couchbaseFleet.StopUnits(allUnits)
@@ -121,9 +132,12 @@ func stopUnits(arguments map[string]interface{}) error {
 func destroyUnits(arguments map[string]interface{}) error {
 
 	etcdServers := cbcluster.ExtractEtcdServerList(arguments)
+	fleetURI, err := cbcluster.ExtractStringArg(arguments, "--fleet-uri")
+	if err != nil {
+		return err
+	}
 
-	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers)
-
+	couchbaseFleet := cbcluster.NewCouchbaseFleet(etcdServers, fleetURI)
 	allUnits := cbcluster.ExtractBoolArg(arguments, "--all-units")
 
 	return couchbaseFleet.DestroyUnits(allUnits)
