@@ -22,6 +22,8 @@ ENV HTTPS_PROXY "proxy-us.intel.com:911"
 
 RUN echo "gopath: " $GOPATH
 RUN echo "goroot: " $GOROOT
-RUN go install
-
-#CMD ["/start.sh"]
+RUN go install couchbase-cluster-go/cmd/update-wrapper
+RUN go install couchbase-cluster-go/cmd/sync-gw-config
+RUN go install couchbase-cluster-go/cmd/sync-gw-cluster
+RUN go install couchbase-cluster-go/cmd/couchbase-fleet
+RUN go install couchbase-cluster-go/cmd/couchbase-cluster

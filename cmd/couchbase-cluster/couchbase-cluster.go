@@ -6,7 +6,10 @@ import (
 	"net"
 	"os"
 
-	"github.intel.com/IT-AdvancedAnalytics/couchbase-cluster-go"
+	"github.com/docopt/docopt-go"
+	"github.com/tleyden/couchbase-cluster-go"
+
+	// "github.intel.com/IT-AdvancedAnalytics/couchbase-cluster-go"
 )
 
 func main() {
