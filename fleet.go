@@ -54,6 +54,8 @@ func NewCouchbaseFleet(etcdServers []string, fleetURI string) *CouchbaseFleet {
 	}
 
 	if fleetURI != "" {
+		c.FleetURI = fleetURI
+	} else {
 		c.FleetURI = FLEET_API_ENDPOINT
 	}
 
