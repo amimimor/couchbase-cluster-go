@@ -26,7 +26,7 @@ $ sudo docker run --net=host intelaa/couchbase-cluster-go update-wrapper sync-gw
   --create-bucket todos \
   --create-bucket-size 512 \ 
   --create-bucket-replicas 1
-$ docker run -v /var/run/fleet.sock:/var/run/fleet.sock  --net=host intelaa/couchbase-cluster-go:latest couchbase-fleet launch-cbs --version community --num-nodes 3   --userpass "iot_user:asdasd" --docker-tag 0.8.6 --etcd-servers 10.110.19.13:4001 --fleet-uri unix:///var/run/fleet.sock
+$ docker run -v /var/run/fleet.sock:/var/run/fleet.sock  --net=host intelaa/couchbase-cluster-go:latest couchbase-fleet launch-cbs --version community --num-nodes 3   --userpass "iot_user:asdasd" --docker-tag 0.8.6 --etcd-servers http://10.110.19.13:2379 --fleet-uri unix:///var/run/fleet.sock
 
 ```
 
