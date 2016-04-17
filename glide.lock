@@ -1,8 +1,8 @@
 hash: b855fe7a569fa09ce5621abec8fcc827e96400925068197fd049269695859d27
-updated: 2016-04-17T13:51:08.995758121+03:00
+updated: 2016-04-17T22:07:58.651853555+03:00
 imports:
 - name: github.com/amimimor/couchbase-cluster-go
-  version: 768bc7059e85c516bab084170bf755a3c8be0af9
+  version: afc3cf020a61ec3c20d9a6e653a33dcf6bcad583
 - name: github.com/coreos/fleet
   version: 01d6766209e0f3911a02d66c7972062ebd971940
   subpackages:
