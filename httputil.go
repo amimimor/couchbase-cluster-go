@@ -96,6 +96,7 @@ func getJsonDataMiddleware(client *http.Client, endpointUrl string, into interfa
 
 	req, err := http.NewRequest("GET", endpointUrl, nil)
 	if err != nil {
+		log.Printf("getJsonDataMiddleware: GET http request creation failed to URI '%s', with error: %s\n", endpointUrl, err.Error())
 		return err
 	}
 
@@ -105,6 +106,7 @@ func getJsonDataMiddleware(client *http.Client, endpointUrl string, into interfa
 
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("getJsonDataMiddleware: GET http request execution failed to URI '%s', with error: %s\n", endpointUrl, err.Error())
 		return err
 	}
 	defer resp.Body.Close()

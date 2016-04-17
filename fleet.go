@@ -72,7 +72,7 @@ func (c *CouchbaseFleet) ConnectToEtcd() {
 
 // Is the Fleet API available?  If not, return an error.
 func (c *CouchbaseFleet) VerifyFleetAPIAvailable() error {
-	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
+	endpointSubdir := fmt.Sprintf("%v/machines", FLEET_API_SUBDIR)
 	log.Printf("VerifyFleetAPIAvailable: connecting to Fleet URI: %s\n", endpointSubdir)
 	jsonMap := map[string]interface{}{}
 	client, uri := c.jsonDataHTTPClient(endpointSubdir)
@@ -167,7 +167,7 @@ func (c CouchbaseFleet) StopUnits(allUnits bool) error {
 
 		// stop the unit by updating desiredState to inactive
 		// and posting to fleet api
-		endpointSubdir := fmt.Sprintf("/%v/units/%v", FLEET_API_SUBDIR, unit.Name)
+		endpointSubdir := fmt.Sprintf("%v/units/%v", FLEET_API_SUBDIR, unit.Name)
 		log.Printf("Stop unit %v via putJsonDataMiddleware %v", unit.Name, endpointSubdir)
 		client, uri := c.jsonDataHTTPClient(endpointSubdir)
 		return putJsonDataMiddleware(client, uri, `{"desiredState": "inactive"}`, func(req *http.Request) {})
