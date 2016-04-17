@@ -73,6 +73,7 @@ func (c *CouchbaseFleet) ConnectToEtcd() {
 // Is the Fleet API available?  If not, return an error.
 func (c *CouchbaseFleet) VerifyFleetAPIAvailable() error {
 	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
+	log.Printf("VerifyFleetAPIAvailable: connecting to Fleet URI: %s\n", endpointSubdir)
 	jsonMap := map[string]interface{}{}
 	client, uri := c.jsonDataHTTPClient(endpointSubdir)
 	return getJsonDataMiddleware(client, uri, &jsonMap, func(req *http.Request) {})
@@ -635,7 +636,9 @@ func (c CouchbaseFleet) jsonDataHTTPClient(endpointSubdir string) (*http.Client,
 	var client *http.Client
 	var uri string
 	if c.isUnixSocket(c.FleetURI) {
-		client = c.createUnixSocketHTTPClient(c.FleetURI)
+		stripped := c.strippedFleetURI()
+		log.Println("jsonDataHTTPClient: stripped FleetURI is: ", stripped)
+		client = c.createUnixSocketHTTPClient(stripped)
 		// using the fake URI to satisfy fleet REST API that requires http://.../ format
 		uri = fmt.Sprintf("%s/%s", FLEET_API_ENDPOINT_STUB, endpointSubdir)
 	} else {
@@ -650,6 +653,10 @@ func (c CouchbaseFleet) isUnixSocket(endpointUrl string) bool {
 	b := strings.HasPrefix(endpointUrl, "unix")
 	log.Println("isUnixSocket called founh to match unix ? ", b)
 	return b
+}
+
+func (c CouchbaseFleet) strippedFleetURI() string {
+	return strings.Replace(c.FleetURI, `unix://`, "", 1)
 }
 
 func (c CouchbaseFleet) createUnixSocketHTTPClient(fleetURI string) *http.Client {
