@@ -12,7 +12,7 @@ func main() {
 	usage := `Couchbase-Fleet.
 
 Usage:
-  couchbase-fleet launch-cbs --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--edition=<edition>] [--etcd-servers=<server-list>] [--fleet-uri] [--docker-tag=<dt>] [--skip-clean-slate-check]
+  couchbase-fleet launch-cbs --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--edition=<edition>] [--etcd-servers=<server-list>] [--fleet-uri=<unix:// or http://>] [--docker-tag=<dt>] [--skip-clean-slate-check]
   couchbase-fleet stop [--all-units] [--etcd-servers=<server-list>]
   couchbase-fleet destroy [--all-units] [--etcd-servers=<server-list>]
   couchbase-fleet generate-units --version=<cb-version> --num-nodes=<num_nodes> --userpass=<user:pass> [--etcd-servers=<server-list>] [--docker-tag=<dt>] --output-dir=<output_dir>
