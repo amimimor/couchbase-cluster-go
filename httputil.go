@@ -63,6 +63,7 @@ func deleteJsonDataMiddleware(client *http.Client, endpointUrl string) error {
 func putJsonDataMiddleware(client *http.Client, endpointUrl, json string, middleware middlewareFunc) error {
 	req, err := http.NewRequest("PUT", endpointUrl, bytes.NewReader([]byte(json)))
 	if err != nil {
+		log.Printf("putJsonDataMiddleware: PUT http request creation failed to URI '%s', with error: %s\n", endpointUrl, err.Error())
 		return err
 	}
 
@@ -72,12 +73,14 @@ func putJsonDataMiddleware(client *http.Client, endpointUrl, json string, middle
 
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("putJsonDataMiddleware: PUT http request execution failed to URI '%s', with error: %s\n", endpointUrl, err.Error())
 		return err
 	}
 
 	defer resp.Body.Close()
 	bodyStr, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		log.Printf("putJsonDataMiddleware: PUT http request execution failed to URI '%s', with error: %s\n", endpointUrl, err.Error())
 		return err
 	}
 

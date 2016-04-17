@@ -641,6 +641,7 @@ func (c CouchbaseFleet) jsonDataHTTPClient(endpointSubdir string) (*http.Client,
 		client = c.createUnixSocketHTTPClient(stripped)
 		// using the fake URI to satisfy fleet REST API that requires http://.../ format
 		uri = fmt.Sprintf("%s/%s", FLEET_API_ENDPOINT_STUB, endpointSubdir)
+		log.Println("jsonDataHTTPClient: using socket and connection with pseudo URI: ", uri)
 	} else {
 		client = c.createHTTPClient()
 		uri = fmt.Sprintf("%s/%s", c.FleetURI, endpointSubdir)
