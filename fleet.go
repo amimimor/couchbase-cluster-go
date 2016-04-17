@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tleyden/go-etcd/etcd"
 	"github.com/coreos/fleet/schema"
 	"github.com/coreos/go-systemd/unit"
+	"github.com/tleyden/go-etcd/etcd"
 )
 
 const (
@@ -69,7 +69,7 @@ func (c *CouchbaseFleet) ConnectToEtcd() {
 }
 
 // Is the Fleet API available?  If not, return an error.
-func (c CouchbaseFleet) VerifyFleetAPIAvailable() error {
+func (c *CouchbaseFleet) VerifyFleetAPIAvailable() error {
 	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
 	jsonMap := map[string]interface{}{}
 	client, uri := c.jsonDataHTTPClient(endpointSubdir)
@@ -644,7 +644,10 @@ func (c CouchbaseFleet) jsonDataHTTPClient(endpointSubdir string) (*http.Client,
 }
 
 func (c CouchbaseFleet) isUnixSocket(endpointUrl string) bool {
-	return strings.HasPrefix(endpointUrl, "unix")
+	log.Println("isUnixSocket called with ", endpointUrl)
+	b := strings.HasPrefix(endpointUrl, "unix")
+	log.Println("isUnixSocket called founh to match unix ? ", b)
+	return b
 }
 
 func (c CouchbaseFleet) createUnixSocketHTTPClient(fleetURI string) *http.Client {
