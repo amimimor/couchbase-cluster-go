@@ -12,7 +12,7 @@ ADD cmd        /go/src/couchbase-cluster-go/cmd/
 #ADD vendor     /go/src/couchbase-cluster-go/vendor/
 #ADD start.sh /
 #RUN chmod +x /start.sh
-
+USER poc_iot
 ENV GO15VENDOREXPERIMENT=1
 WORKDIR /go/src/couchbase-cluster-go/
 ENV HTTP_PROXY "proxy-us.intel.com:911"
