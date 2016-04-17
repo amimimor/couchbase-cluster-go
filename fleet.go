@@ -414,7 +414,7 @@ func (c CouchbaseFleet) verifyEnoughMachinesAvailable() error {
 
 	log.Printf("verifyEnoughMachinesAvailable()")
 
-	endpointSubdir := fmt.Sprintf("/%v/machines", FLEET_API_SUBDIR)
+	endpointSubdir := fmt.Sprintf("%v/machines", FLEET_API_SUBDIR)
 	jsonMap := map[string]interface{}{}
 	client, uri := c.jsonDataHTTPClient(endpointSubdir)
 
