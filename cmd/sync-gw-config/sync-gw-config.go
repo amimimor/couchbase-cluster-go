@@ -20,7 +20,7 @@ Usage:
 Options:
   -h --help     Show this screen.
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
-  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
+  --fleet-uri=<URI> Fleet service URI formated to http://localhost:49153 | unix:///var/run/fleet.sock
   --destination=<config-dest> The path where the updated config should be written
 `
 

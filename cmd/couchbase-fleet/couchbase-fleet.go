@@ -25,7 +25,7 @@ Options:
   --userpass=<user:pass> the username and password as a single string, delimited by a colon (:)
   --edition=<edition> the edition to use, either "enterprise" or "community".  Defaults to "community" edition. 
   --etcd-servers=<server-list>  Comma separated list of etcd servers, or omit to connect to etcd running on localhost
-  --fleet-uri=<URI> Fleet service URI formated to [http://localhost:49153 | unix:///var/run/fleet.sock]
+  --fleet-uri=<URI> Fleet service URI formated to http://localhost:49153 | unix:///var/run/fleet.sock
   --docker-tag=<dt>  if present, use this docker tag for spawned containers, otherwise, default to "latest"
   --skip-clean-slate-check  if present, will skip the check that we are starting from clean state
   --output-dir=<output_dir>
